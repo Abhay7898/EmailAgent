@@ -21,14 +21,8 @@ public class GmailController {
     }
 
     @PostMapping("/draft")
-    public String createDraft(
-            @RequestBody DraftRequest request
-    ) throws Exception {
+    public String createDraft(@RequestBody DraftRequest request) throws Exception {
 
-        return gmailService.createDraft(
-                request.getTo(),
-                request.getSubject(),
-                request.getBody()
-        );
+        return gmailService.createDraft(request.getTo(), request.getSubject(), request.getBody());
     }
 }

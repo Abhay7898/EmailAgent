@@ -10,16 +10,13 @@ public class EmailAgentController {
 
     private final EmailAgentService emailAgentService;
 
-    public EmailAgentController(
-            EmailAgentService emailAgentService) {
+    public EmailAgentController(EmailAgentService emailAgentService) {
 
         this.emailAgentService = emailAgentService;
     }
 
     @PostMapping("/create")
-    public String createEmail(
-            @RequestBody EmailRequest request
-    ) throws Exception {
+    public String createEmail(@RequestBody EmailRequest request) throws Exception {
 
         return emailAgentService.createEmailDraft(request);
     }

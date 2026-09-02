@@ -24,63 +24,29 @@ public class GmailConfig {
 
     private static final String APPLICATION_NAME = "AI Email Agent";
 
-    private static final GsonFactory JSON_FACTORY =
-            GsonFactory.getDefaultInstance();
+    private static final GsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
 
-    private static final List<String> SCOPES =
-            Collections.singletonList(GmailScopes.GMAIL_COMPOSE);
+    private static final List<String> SCOPES = Collections.singletonList(GmailScopes.GMAIL_COMPOSE);
 
     @Bean
     public GmailCredential gmailCredential() throws Exception {
 
-        final NetHttpTransport HTTP_TRANSPORT =
-                GoogleNetHttpTransport.newTrustedTransport();
+        final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
 
-        InputStream in = GmailConfig.class
-                .getClassLoader()
-                .getResourceAsStream("credentials.json");
+        InputStream in = GmailConfig.class.getClassLoader().getResourceAsStream("credentials.json");
 
         if (in == null) {
-            throw new RuntimeException(
-                    "credentials.json not found"
-            );
+            throw new RuntimeException("credentials.json not found");
         }
 
-        GoogleClientSecrets clientSecrets =
-                GoogleClientSecrets.load(
-                        JSON_FACTORY,
-                        new InputStreamReader(in)
-                );
+        GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(in));
 
-        GoogleAuthorizationCodeFlow flow =
-                new GoogleAuthorizationCodeFlow.Builder(
-                        HTTP_TRANSPORT,
-                        JSON_FACTORY,
-                        clientSecrets,
-                        SCOPES
-                )
-                        .setDataStoreFactory(
-                                new FileDataStoreFactory(
-                                        new File("tokens")
-                                )
-                        )
-                        .setAccessType("offline")
-                        .build();
+        GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(HTTP_TRANSPORT, JSON_FACTORY, clientSecrets, SCOPES).setDataStoreFactory(new FileDataStoreFactory(new File("tokens"))).setAccessType("offline").build();
 
-        LocalServerReceiver receiver =
-                new LocalServerReceiver.Builder()
-                        .setPort(8888)
-                        .build();
+        LocalServerReceiver receiver = new LocalServerReceiver.Builder().setPort(8888).build();
 
-        Credential credential =
-                new AuthorizationCodeInstalledApp(
-                        flow,
-                        receiver
-                ).authorize("user");
+        Credential credential = new AuthorizationCodeInstalledApp(flow, receiver).authorize("user");
 
-        return new GmailCredential(
-                HTTP_TRANSPORT,
-                credential
-        );
+        return new GmailCredential(HTTP_TRANSPORT, credential);
     }
 }

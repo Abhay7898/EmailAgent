@@ -12,38 +12,34 @@ public class EmailAgentService {
     private final GmailService gmailService;
     private final ObjectMapper objectMapper;
 
-    public EmailAgentService(
-            AIService aiService,
-            GmailService gmailService,
-            ObjectMapper objectMapper) {
+    public EmailAgentService(AIService aiService, GmailService gmailService, ObjectMapper objectMapper) {
 
         this.aiService = aiService;
         this.gmailService = gmailService;
         this.objectMapper = objectMapper;
     }
 
-    public String createEmailDraft(
-            EmailRequest request) throws Exception {
+    public String createEmailDraft(EmailRequest request) throws Exception {
 
         String prompt = """
                 You are an AI email writing agent.
-
+                
                 The user will provide a natural-language instruction.
-
+                
                 Your job is to understand the user's instruction and
                 create a complete professional email.
-
+                
                 USER INSTRUCTION:
                 %s
-
+                
                 RECIPIENT:
                 %s
-
+                
                 EMAIL TONE:
                 %s
-
+                
                 RULES:
-
+                
                 1. Understand the user's request carefully.
                 2. Write the email based only on information provided
                    by the user.
@@ -64,32 +60,19 @@ public class EmailAgentService {
                 13. The JSON must contain exactly two fields:
                     "subject"
                     "body"
-
+                
                 Example output format:
-
+                
                 {
                   "subject": "Application for Java Developer",
                   "body": "Hello ... "
                 }
-                """.formatted(
-                request.getPrompt(),
-                request.getTo(),
-                request.getTone()
-        );
+                """.formatted(request.getPrompt(), request.getTo(), request.getTone());
 
-        String aiResponse =
-                aiService.generateResponse(prompt);
+        String aiResponse = aiService.generateResponse(prompt);
 
-        EmailResponse emailResponse =
-                objectMapper.readValue(
-                        aiResponse,
-                        EmailResponse.class
-                );
+        EmailResponse emailResponse = objectMapper.readValue(aiResponse, EmailResponse.class);
 
-        return gmailService.createDraft(
-                request.getTo(),
-                emailResponse.getSubject(),
-                emailResponse.getBody()
-        );
+        return gmailService.createDraft(request.getTo(), emailResponse.getSubject(), emailResponse.getBody());
     }
 }
