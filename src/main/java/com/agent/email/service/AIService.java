@@ -14,11 +14,9 @@ public class AIService {
 
     public String generateResponse(String prompt) {
 
-        String ollamaUrl =
-                "http://localhost:11434/api/generate";
+        String ollamaUrl = "http://localhost:11434/api/generate";
 
-        Map<String, Object> request =
-                new HashMap<>();
+        Map<String, Object> request = new HashMap<>();
 
         request.put("model", "llama3.2");
         request.put("prompt", prompt);
@@ -29,39 +27,22 @@ public class AIService {
         // Get complete response instead of streaming
         request.put("stream", false);
 
-        HttpHeaders headers =
-                new HttpHeaders();
+        HttpHeaders headers = new HttpHeaders();
 
-        headers.setContentType(
-                MediaType.APPLICATION_JSON
-        );
+        headers.setContentType(MediaType.APPLICATION_JSON);
 
-        HttpEntity<Map<String, Object>> entity =
-                new HttpEntity<>(
-                        request,
-                        headers
-                );
+        HttpEntity<Map<String, Object>> entity = new HttpEntity<>(request, headers);
 
-        ResponseEntity<Map> response =
-                restTemplate.postForEntity(
-                        ollamaUrl,
-                        entity,
-                        Map.class
-                );
+        ResponseEntity<Map> response = restTemplate.postForEntity(ollamaUrl, entity, Map.class);
 
         if (response.getBody() == null) {
-            throw new RuntimeException(
-                    "No response received from Ollama."
-            );
+            throw new RuntimeException("No response received from Ollama.");
         }
 
-        Object responseText =
-                response.getBody().get("response");
+        Object responseText = response.getBody().get("response");
 
         if (responseText == null) {
-            throw new RuntimeException(
-                    "Ollama response field is missing."
-            );
+            throw new RuntimeException("Ollama response field is missing.");
         }
 
         return responseText.toString();

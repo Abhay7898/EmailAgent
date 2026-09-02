@@ -16,7 +16,6 @@ public class AIController {
 
     @PostMapping("/generate")
     public String generate(@RequestBody AIRequest request) {
-
         return aiService.generateResponse(request.getPrompt());
     }
 }

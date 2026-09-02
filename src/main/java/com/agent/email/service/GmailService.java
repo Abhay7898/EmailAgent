@@ -21,47 +21,25 @@ public class GmailService {
 
     public GmailService(GmailCredential gmailCredential) {
 
-        this.gmail = new Gmail.Builder(
-                gmailCredential.getHttpTransport(),
-                com.google.api.client.json.gson.GsonFactory
-                        .getDefaultInstance(),
-                gmailCredential.getCredential()
-        )
-                .setApplicationName("AI Email Agent")
-                .build();
+        this.gmail = new Gmail.Builder(gmailCredential.getHttpTransport(), com.google.api.client.json.gson.GsonFactory.getDefaultInstance(), gmailCredential.getCredential()).setApplicationName("AI Email Agent").build();
     }
 
     public String testConnection() throws Exception {
 
-        return gmail.users()
-                .getProfile("me")
-                .execute()
-                .getEmailAddress();
+        return gmail.users().getProfile("me").execute().getEmailAddress();
     }
 
-    public String createDraft(
-            String to,
-            String subject,
-            String body) throws Exception {
+    public String createDraft(String to, String subject, String body) throws Exception {
 
-        MimeMessage email = createEmail(
-                to,
-                subject,
-                body
-        );
+        MimeMessage email = createEmail(to, subject, body);
 
-        ByteArrayOutputStream buffer =
-                new ByteArrayOutputStream();
+        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 
         email.writeTo(buffer);
 
-        byte[] rawMessageBytes =
-                buffer.toByteArray();
+        byte[] rawMessageBytes = buffer.toByteArray();
 
-        String encodedEmail =
-                Base64.getUrlEncoder()
-                        .withoutPadding()
-                        .encodeToString(rawMessageBytes);
+        String encodedEmail = Base64.getUrlEncoder().withoutPadding().encodeToString(rawMessageBytes);
 
         Message message = new Message();
 
@@ -71,44 +49,22 @@ public class GmailService {
 
         draft.setMessage(message);
 
-        Draft createdDraft =
-                gmail.users()
-                        .drafts()
-                        .create("me", draft)
-                        .execute();
+        Draft createdDraft = gmail.users().drafts().create("me", draft).execute();
 
         return createdDraft.getId();
     }
 
-    private MimeMessage createEmail(
-            String to,
-            String subject,
-            String body) throws Exception {
+    private MimeMessage createEmail(String to, String subject, String body) throws Exception {
 
         Properties props = new Properties();
 
-        Session session =
-                Session.getDefaultInstance(
-                        props,
-                        null
-                );
+        Session session = Session.getDefaultInstance(props, null);
 
-        MimeMessage email =
-                new MimeMessage(session);
+        MimeMessage email = new MimeMessage(session);
 
-        email.setFrom(
-                new InternetAddress(
-                        gmail.users()
-                                .getProfile("me")
-                                .execute()
-                                .getEmailAddress()
-                )
-        );
+        email.setFrom(new InternetAddress(gmail.users().getProfile("me").execute().getEmailAddress()));
 
-        email.addRecipient(
-                jakarta.mail.Message.RecipientType.TO,
-                new InternetAddress(to)
-        );
+        email.addRecipient(jakarta.mail.Message.RecipientType.TO, new InternetAddress(to));
 
         email.setSubject(subject, "UTF-8");
 

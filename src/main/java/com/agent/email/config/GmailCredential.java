@@ -8,9 +8,7 @@ public class GmailCredential {
     private final HttpTransport httpTransport;
     private final Credential credential;
 
-    public GmailCredential(
-            HttpTransport httpTransport,
-            Credential credential) {
+    public GmailCredential(HttpTransport httpTransport, Credential credential) {
 
         this.httpTransport = httpTransport;
         this.credential = credential;
